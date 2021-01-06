@@ -1,0 +1,183 @@
+
+```{r}
+#Librerias
+library(pwr)
+library(ggplot2)
+library(dplyr)
+library(fitdistrplus)
+```
+
+
+```{r}
+pwr.anova.test(k=5, n=NULL, f=0.8, sig.level = 0.05, power= 0.8)
+#Me arroja que para obtener resultados significativos, almenos necesito 4,78 muestras por grupo, nosotros tenemos 21 por lo que estamos bien.
+```
+
+# Comenzando a obtener los datos de nuestros sujetos
+```{r}
+##Linea Base (Grupo 0)
+
+# obtenemos toda la base de datos de epilepsia
+data_cruda<-MASS::epil
+data_cruda
+# Nos quedamos solo con los datos de aquellos con tratamiento de progabide excluyendo a aquellos con trt=="placebo"
+sujetos_progabide<-subset(data_cruda, trt == "progabide")
+sujetos_progabide$y
+# como cada sujeto tiene 4 medidas en y, obtengo diviendo entre 4 la cantidad de sujetos.
+num_sujetos<-(length(sujetos_progabide$trt)/4)
+# obtener la linea base con identificador de paciente
+linea_base_cruda <- data.frame(sujetos_progabide$base,sujetos_progabide$age,sujetos_progabide$subject)
+# eliminamos los valores repetidos (ya que como se tiene 4 medidas pero la base es la misma e igual el identificador del sujeto)
+linea_base_cruda[duplicated(linea_base_cruda), ]
+#Con esto cambio los nombres.
+grupo0 <- rename(linea_base_cruda %>% distinct, base = "sujetos_progabide.base" , edad="sujetos_progabide.age",sujeto= "sujetos_progabide.subject")
+```
+
+
+```{r}
+##Grupo 1,2,3,4 (las semanas)
+
+sujetos_progabide1 <- subset(sujetos_progabide, period == "1")
+grupo1 <- data.frame(sujetos_progabide1$y,sujetos_progabide1$age,sujetos_progabide1$subject)
+grupo1 <- rename(grupo1 %>% distinct, N_epilepsias1 = "sujetos_progabide1.y" , edad="sujetos_progabide1.age",sujeto= "sujetos_progabide1.subject")
+
+sujetos_progabide2 <- subset(sujetos_progabide, period == "2")
+grupo2 <- data.frame(sujetos_progabide2$y,sujetos_progabide2$age,sujetos_progabide2$subject)
+grupo2 <- rename(grupo2 %>% distinct, N_epilepsias2 = "sujetos_progabide2.y" , edad="sujetos_progabide2.age",sujeto= "sujetos_progabide2.subject")
+
+sujetos_progabide3 <- subset(sujetos_progabide, period == "3")
+grupo3 <- data.frame(sujetos_progabide3$y,sujetos_progabide3$age,sujetos_progabide3$subject)
+grupo3 <- rename(grupo3 %>% distinct, N_epilepsias3 = "sujetos_progabide3.y" , edad="sujetos_progabide3.age",sujeto= "sujetos_progabide3.subject")
+
+sujetos_progabide4 <- subset(sujetos_progabide, period == "4")
+grupo4 <- data.frame(sujetos_progabide4$y,sujetos_progabide4$age,sujetos_progabide4$subject)
+grupo4 <- rename(grupo4 %>% distinct, N_epilepsias4 = "sujetos_progabide4.y" , edad="sujetos_progabide4.age",sujeto= "sujetos_progabide4.subject")
+grupos <- data.frame(grupo0,grupo1$N_epilepsias1,grupo2$N_epilepsias2,grupo3$N_epilepsias3,grupo4$N_epilepsias4)
+#Podria quitar los sujetos y edad y dejar uno solo y asi no repetir variables en el data frame de grupos, pero individualmente como data.frame si es necesario para identificar.
+```
+
+```{r}
+#Pruebas estadisticas de linea base para observar que tipo de distribucion es
+shapiro.test(grupo0$base)
+#puedo rechazar la hipotesis nula
+#no es normal nuestra distribucion
+
+hist(log10(grupo0$base)) #no es recomendable para ver mejor si hay outlayers.
+hist(grupo0$base)
+plot(x = grupo0$base)
+#Q-Q plot para verificar si es normal
+qqnorm(grupo0$base)
+qqline(grupo0$base, col="purple", lw=2)
+#jugando con los datos para entender mejor lo que hago
+p<-ggplot(grupo0, aes(x=base, y=edad)) + 
+  geom_dotplot(binaxis='y')
+p
+
+descdist(grupo0$base) # se ve como una distribucion beta
+p <- seq(0,80, length=100) #### aqui hab?ia un igual (=) pero yo lo cambie por la flechita (<-) atte Pau
+qqplot(grupo0$base, dbeta(p, 100, 100))
+#se puede colocar el parametro boot, Ajustala a la beta. Hace Q-Qplot     
+#el segundo dataset debe ser con la que compararare
+#si son muy raras, estadistica descriptiva.
+#distribucion empirica ponderada
+```
+
+
+#Observando estadistica descriptiva de grupos de las semanas:
+
+```{r}
+summary(grupos)
+```
+
+
+
+# PRUEBAS DE NORMALIDAD
+```{r}
+## Grupo 1
+shapiro.test(grupo1$N_epilepsias1) # se rechaza hipotesis nula, no es normal la distribucion 
+hist(grupo1$N_epilepsias1)
+descdist(grupo1$N_epilepsias1) # se ve que tambien es beta
+
+## Grupo 2
+shapiro.test(grupo2$N_epilepsias2) # se rechaza hipotesis nula, no es normal la distribucion 
+hist(grupo2$N_epilepsias2)
+descdist(grupo2$N_epilepsias2)# se ve que tambien es beta
+
+## Grupo 3
+shapiro.test(grupo3$N_epilepsias3) # se rechaza hipotesis nula, no es normal la distribucion 
+hist(grupo3$N_epilepsias3)
+descdist(grupo3$N_epilepsias3)# se ve que tambien es beta
+
+## Grupo 4
+shapiro.test(grupo4$N_epilepsias4) # se rechaza hipetesis nula, no es normal la distribucion 
+hist(grupo4$N_epilepsias4)
+descdist(grupo4$N_epilepsias4)# se ve que tambien es beta
+```
+
+```{r}
+# Para ver si estan bien codificados los datos:
+str(grupo0) # todos son enteros, se ve bien
+str(grupo1)
+str(grupo2)
+str(grupo3)
+str(grupo4)
+str(grupos)
+```
+
+
+
+#Todos son betas, por ende podemos utilizar... ANOVA? Friedman? kruskal?
+
+# Hago unos boxplot a ver:
+
+```{r}
+b0 <- ggplot(grupo0, aes(x=sujeto, y=base)) + 
+  geom_boxplot()
+b0
+b1 <- ggplot(grupo1, aes(x=sujeto, y=N_epilepsias1)) + 
+  geom_boxplot()
+b1
+b2 <- ggplot(grupo2, aes(x=sujeto, y=N_epilepsias2)) + 
+  geom_boxplot()
+b2
+b3 <- ggplot(grupo3, aes(x=sujeto, y=N_epilepsias3)) + 
+  geom_boxplot()
+b3
+b4 <- ggplot(grupo4, aes(x=sujeto, y=N_epilepsias4)) + 
+  geom_boxplot()
+b4
+
+base_entre_4<- (grupo0$base)/4
+
+suma_total_trt<-grupo1$N_epilepsias1+grupo2$N_epilepsias2+grupo3$N_epilepsias3+grupo4$N_epilepsias4
+
+boxplot(base_entre_4,grupo1$N_epilepsias1,grupo2$N_epilepsias2,grupo3$N_epilepsias3,grupo4$N_epilepsias4)
+
+boxplot(grupo0$base,suma_total_trt)
+
+boxplot(data_cruda$y~data_cruda$period)
+
+```
+
+# Utilizando Kruskal Willis
+```{r}
+#Analisis estadistico utilizando el carlos walace
+
+kruskal.test(formula,x=grupo1$N_epilepsias1, g=grupo0$base)
+
+kruskal.test(formula,x=grupo2$N_epilepsias2, g=grupo0$base)
+
+kruskal.test(formula,x=grupo3$N_epilepsias3, g=grupo0$base)
+
+kruskal.test(formula,x=grupo4$N_epilepsias4, g=grupo0$base)
+
+kruskal.test(formula,x=suma_total_trt, g=grupo0$base)
+```
+
+
+
+
+
+
+
+  
