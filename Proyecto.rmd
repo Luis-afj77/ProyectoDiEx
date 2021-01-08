@@ -199,7 +199,6 @@ boxplots <- ggplot(boxplots.df, aes(x= periodo, y= crisis, color=periodo)) +
 boxplots
 ```
 
-
 # Utilizando Kruskal Willis
 ```{r}
 #Analisis estadistico utilizando el carlos walace
@@ -214,6 +213,162 @@ kruskal.test(formula,x=grupo4$N_epilepsias4, g=grupo0$base)
 
 kruskal.test(formula,x=suma_total_trt, g=grupo0$base)
 ```
+
+# Gráfica de cómo va avanzando cada paciente
+
+sujetos <- sujetos_progabide$subject
+sujetos.df <- data.frame(sujetos, sujetos_progabide$y, sujetos_progabide$period)
+
+names(sujetos.df)[names(sujetos.df) == "sujetos_progabide.y"] <- "crisis"
+names(sujetos.df)[names(sujetos.df) == "sujetos_progabide.period"] <- "periodo"
+
+periodo0 <- data.frame(sujetos = sujetos_progabide$subject, crisis= sujetos_progabide$base, periodo = 0 )
+
+sujetos.df <- rbind(sujetos.df, periodo0)
+sujetos.df$periodo <- as.factor(sujetos.df$periodo)
+sujetos.df$sujetos <- as.factor(sujetos.df$sujetos)
+View(sujetos.df)
+
+individual <- ggplot(sujetos.df, aes(x = periodo, y = crisis, color = sujetos, group = sujetos)) + geom_point() + geom_line()
+individual
+
+
+# Realizamos lo mismo con el grupo control
+
+# Nos quedamos solo con los datos de aquellos con placebo 
+sujetos_placebo<-subset(data_cruda, trt == "placebo")
+sujetos_placebo$y
+# como cada sujeto tiene 4 medidas en y, obtengo diviendo entre 4 la cantidad de sujetos.
+num_sujetospl<-(length(sujetos_placebo$trt)/4)
+# obtener la linea base con identificador de paciente
+linea_base_p <- data.frame(sujetos_placebo$base,sujetos_placebo$age,sujetos_placebo$subject)
+# eliminamos los valores repetidos (ya que como se tiene 4 medidas pero la base es la misma e igual el identificador del sujeto)
+linea_base_p[duplicated(linea_base_p), ]
+#Con esto cambio los nombres.
+control0 <- rename(linea_base_p %>% distinct, base = "sujetos_placebo.base" , edad="sujetos_placebo.age",sujeto= "sujetos_placebo.subject")
+
+## Control 1,2,3,4 (las semanas)
+
+sujetos_placebo1 <- subset(sujetos_placebo, period == "1")
+control1 <- data.frame(sujetos_placebo1$y,sujetos_placebo1$age,sujetos_placebo1$subject)
+control1 <- rename(control1 %>% distinct, crisis1 = "sujetos_placebo1.y" , edad="sujetos_placebo1.age",sujeto= "sujetos_placebo1.subject")
+
+sujetos_placebo2 <- subset(sujetos_placebo, period == "2")
+control2 <- data.frame(sujetos_placebo2$y,sujetos_placebo2$age,sujetos_placebo2$subject)
+control2 <- rename(control2 %>% distinct, crisis2 = "sujetos_placebo2.y" , edad="sujetos_placebo2.age",sujeto= "sujetos_placebo2.subject")
+
+sujetos_placebo3 <- subset(sujetos_placebo, period == "3")
+control3 <- data.frame(sujetos_placebo3$y,sujetos_placebo3$age,sujetos_placebo3$subject)
+control3 <- rename(control3 %>% distinct, crisis3 = "sujetos_placebo3.y" , edad="sujetos_placebo3.age",sujeto= "sujetos_placebo3.subject")
+
+sujetos_placebo4 <- subset(sujetos_placebo, period == "4")
+control4 <- data.frame(sujetos_placebo4$y,sujetos_placebo4$age,sujetos_placebo4$subject)
+control4 <- rename(control4 %>% distinct, crisis4 = "sujetos_placebo4.y" , edad="sujetos_placebo4.age",sujeto= "sujetos_placebo4.subject")
+controles <- data.frame(control0,control1,control2,control3,control4)
+
+
+## Ver las distribuciones en cada control (boxplots)
+
+boxplotsc.df <- data.frame(sujetos_placebo$y, sujetos_placebo$period)
+colnames(boxplotsc.df)
+
+names(boxplotsc.df)[names(boxplotsc.df) == "sujetos_placebo.y"] <- "crisis"
+names(boxplotsc.df)[names(boxplotsc.df) == "sujetos_placebo.period"] <- "periodo"
+
+p0 <- data.frame(crisis= sujetos_placebo$base / 4, periodo = 0)
+
+boxplotsc.df <- rbind(boxplotsc.df, p0)
+boxplotsc.df$periodo <- as.factor(boxplotsc.df$periodo)
+
+bpcontrol <- ggplot(boxplotsc.df, aes(x= periodo, y= crisis, color=periodo)) +
+  geom_boxplot()
+bpcontrol
+
+
+# Gráfica de cómo va avanzando cada control
+
+sujetos.control <- data.frame(sujetos_placebo$subject, sujetos_placebo$y, sujetos_placebo$period)
+
+names(sujetos.control)[names(sujetos.control) == "sujetos_placebo.y"] <- "crisis"
+names(sujetos.control)[names(sujetos.control) == "sujetos_placebo.period"] <- "periodo"
+names(sujetos.control)[names(sujetos.control) == "sujetos_placebo.subject"] <- "sujetos"
+
+p0.c <- data.frame(sujetos = sujetos_placebo$subject, crisis= sujetos_placebo$base, periodo = 0 )
+
+sujetos.control <- rbind(sujetos.control, p0.c)
+sujetos.control$periodo <- as.factor(sujetos.control$periodo)
+sujetos.control$sujetos <- as.factor(sujetos.control$sujetos)
+View(sujetos.control)
+
+indcontrol <- ggplot(sujetos.control, aes(x = periodo, y = crisis, color = sujetos, group = sujetos)) + geom_point() + geom_line()
+indcontrol
+
+## Pruebas estadisticas de linea base para observar que tipo de distribucion es
+
+shapiro.test(control0$base)
+#puedo rechazar la hipotesis nula
+#no es normal nuestra distribución
+hist(log10(control0$base)) #no es recomendable para ver mejor si hay outlayers.
+hist(control0$base)
+#Q-Q plot para verificar si es normal
+qqnorm(control0$base)
+qqline(control0$base, col="purple", lw=2) #se ve que no es normal
+
+library(fitdistrplus)
+descdist(control0$base) # también se ve como una distribución beta
+
+
+## Observando estadistica descriptiva de grupos de las semanas:
+
+summary(controles) #tendríamos que cambiar los sujetos a factores
+
+controles$sujeto <- as.factor(controles$sujeto)
+controles$sujeto.1 <- as.factor(controles$sujeto.1)
+controles$sujeto.2 <- as.factor(controles$sujeto.2)
+controles$sujeto.3 <- as.factor(controles$sujeto.3)
+controles$sujeto.4 <- as.factor(controles$sujeto.4)
+
+summary(controles) # listo :)
+
+# PRUEBAS DE NORMALIDAD
+
+## Control 1
+shapiro.test(control1$crisis1) # se rechaza hipótesis nula, no es normal la distribución 
+hist(control1$crisis1)
+library(fitdistrplus)
+descdist(control1$crisis1) # se ve que también es beta
+
+## Control 2
+shapiro.test(control2$crisis2) # se rechaza hipótesis nula, no es normal la distribución 
+hist(control2$crisis2)
+library(fitdistrplus)
+descdist(control2$crisis2)# se ve que también es beta
+
+## Control 3
+shapiro.test(control3$crisis3) # se rechaza hipótesis nula, no es normal la distribución 
+hist(control3$crisis3)
+library(fitdistrplus)
+descdist(control3$crisis3)# se ve que también es beta
+
+## Control 4
+shapiro.test(control4$crisis4) # se rechaza hipótesis nula, no es normal la distribución 
+hist(control4$crisis4)
+library(fitdistrplus)
+descdist(control4$crisis4)# se ve que también es beta
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
