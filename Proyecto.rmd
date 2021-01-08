@@ -158,29 +158,48 @@ boxplot(grupo0$base,suma_total_trt)
 boxplot(data_cruda$y~data_cruda$period)
 
 ```
+
+# Quitar el outlier
+```{r}
+#buscamos dode esta el outlier, sujeto 49
+which(sujetos_progabide$subject == 49)
+
+
+#borramos las filas 81, 82, 83, 84 y asignamos nuevo nombre
+
+sujetos_progabide_out <- sujetos_progabide[-c(81, 82, 83, 84),]
+sujetos_progabide_out
+```
 # Boxplots comparados y con colorcitos
 ```{r}
 #dataframe con los datos necesarios
 
-boxplots.df <- data.frame(sujetos_progabide$y, sujetos_progabide$period)
+boxplots.df <- data.frame(sujetos_progabide_out$y, sujetos_progabide_out$period)
+
+#cambiando nombres
+
 colnames(boxplots.df)
+names(boxplots.df)[names(boxplots.df) == "sujetos_progabide_out.y"] <- "crisis"
+names(boxplots.df)[names(boxplots.df) == "sujetos_progabide_out.period"] <- "periodo"
 
-names(boxplots.df)[names(boxplots.df) == "sujetos_progabide.y"] <- "crisis"
-names(boxplots.df)[names(boxplots.df) == "sujetos_progabide.period"] <- "periodo"
-boxplots.df$periodo <- as.factor(boxplots.df$periodo)
-
-#añadiendo la base/4 como periodo 0
-
-period0 <- data.frame(crisis= sujetos_progabide$base / 4, periodo = 0)
+# añadiendo la base/4 como periodo 0 
+period0 <- data.frame(crisis= sujetos_progabide_out$base/4, periodo = 0)
 
 boxplots.df <- rbind(boxplots.df, period0)
+boxplots.df
 
-#haciendo el plot
+# convirtiendo a factor el periodo
+
+boxplots.df$periodo <- as.factor(boxplots.df$periodo)
+
+# ploteo
 
 boxplots <- ggplot(boxplots.df, aes(x= periodo, y= crisis, color=periodo)) +
   geom_boxplot()
 boxplots
 ```
+
+
 # Utilizando Kruskal Willis
 ```{r}
 #Analisis estadistico utilizando el carlos walace
