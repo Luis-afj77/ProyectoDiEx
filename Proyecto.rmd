@@ -159,33 +159,37 @@ boxplot(data_cruda$y~data_cruda$period)
 
 ```
 
-# Quitar el outlier
+# Quitar los outliers
 ```{r}
-#buscamos dode esta el outlier, sujeto 49
-which(sujetos_progabide$subject == 49)
+#buscamos donde estan los outliers, sujetos 49 y 25
+data_cruda
+which(data_cruda$subject == 49)
+which(data_cruda$subject == 25)
 
+#borramos las filas correspondientes y asignamos nuevo nombre
 
-#borramos las filas 81, 82, 83, 84 y asignamos nuevo nombre
-
-sujetos_progabide_out <- sujetos_progabide[-c(81, 82, 83, 84),]
-sujetos_progabide_out
+data_cruda_out <- data_cruda[-c(97, 98, 99, 100, 193, 194, 195, 196),]
+data_cruda_out
 ```
+
 # Boxplots comparados y con colorcitos
 ```{r}
 #dataframe con los datos necesarios
 
-boxplots.df <- data.frame(sujetos_progabide_out$y, sujetos_progabide_out$period)
+boxplots.df <- data.frame(data_cruda_out$y, data_cruda_out$period, data_cruda_out$trt)
 
 #cambiando nombres
 
 colnames(boxplots.df)
-names(boxplots.df)[names(boxplots.df) == "sujetos_progabide_out.y"] <- "crisis"
-names(boxplots.df)[names(boxplots.df) == "sujetos_progabide_out.period"] <- "periodo"
+names(boxplots.df)[names(boxplots.df) == "data_cruda_out.y"] <- "crisis"
+names(boxplots.df)[names(boxplots.df) == "data_cruda_out.period"] <- "periodo"
+names(boxplots.df)[names(boxplots.df) == "data_cruda_out.trt"] <- "tratamiento"
 
 # añadiendo la base/4 como periodo 0 
-period0 <- data.frame(crisis= sujetos_progabide_out$base/4, periodo = 0)
+period0 <- data.frame(crisis= data_cruda_out$base/4, periodo = 0, tratamiento = data_cruda_out$trt)
 
 boxplots.df <- rbind(boxplots.df, period0)
+
 boxplots.df
 
 # convirtiendo a factor el periodo
@@ -194,9 +198,61 @@ boxplots.df$periodo <- as.factor(boxplots.df$periodo)
 
 # ploteo
 
-boxplots <- ggplot(boxplots.df, aes(x= periodo, y= crisis, color=periodo)) +
+boxplots <- ggplot(boxplots.df, aes(x= periodo, y= crisis, fill= tratamiento)) +
   geom_boxplot()
 boxplots
+```
+
+# Graficas de diferencias contra la linea base
+```{r}
+#para sumar las y's, primero hacemos lo que habia hecho Luis de dividir por semanas pero con la data cruda
+sujetos1 <- subset(data_cruda_out, period == "1")
+grupocruda1 <- data.frame(sujetos1$y, sujetos1$subject ,sujetos1$trt)
+
+sujetos2 <- subset(data_cruda_out, period == "2")
+grupocruda2 <- data.frame(sujetos2$y, sujetos2$subject, sujetos2$trt)
+
+sujetos3 <- subset(data_cruda_out, period == "3")
+grupocruda3 <- data.frame(sujetos3$y, sujetos3$subject, sujetos3$trt)
+
+sujetos4 <- subset(data_cruda_out, period == "4")
+grupocruda4 <- data.frame(sujetos4$y, sujetos4$subject, sujetos4$trt)
+
+sumados.df <- data.frame(sujetos1$y + sujetos2$y + sujetos3$y + sujetos4$y, sujetos1$subject, sujetos1$trt) #y's sumadas
+
+#dataframes con los datos necesarios
+basev4 <- subset(data_cruda_out, V4 == "1") #base de cada sujeto sin repeticiones
+
+diferencias.df <- data.frame(basev4$base - sumados.df$sujetos1.y...sujetos2.y...sujetos3.y...sujetos4.y, basev4$subject, basev4$trt) #df de diferencias
+diferencias.df.ord <- diferencias.df[order(diferencias.df$basev4.base...sumados.df.sujetos1.y...sujetos2.y...sujetos3.y...sujetos4.y),] #df ordenado
+
+#cambiando nombres
+
+colnames(diferencias.df.ord)
+names(diferencias.df.ord)[names(diferencias.df.ord) == "diferencia.crisis"] <- "Diferencia"
+names(diferencias.df.ord)[names(diferencias.df.ord) == "sujeto"] <- "Sujeto"
+names(diferencias.df.ord)[names(diferencias.df.ord) == "tratamiento"] <- "Tratamiento"
+
+#diferencia media de cada grupo
+dif.media <- ddply(diferencias.df.ord, "Tratamiento", summarise, grp.mean=mean(Diferencia))
+dif.media
+
+#ploteo de histograma
+histo.dif <-ggplot(diferencias.df.ord, aes(x= Diferencia, color= Tratamiento)) +
+  geom_histogram(binwidth= 5,
+                 center = 3,
+                 fill="white", 
+                 position="dodge") +
+  geom_vline(data= dif.media, aes(xintercept=grp.mean, color=Tratamiento),
+             linetype="dashed") +
+  scale_x_continuous(breaks = seq(-45, 45, by= 5)) +
+  theme(legend.position="top")
+histo.dif
+#ploteo de linea
+diferencias.linea <-ggplot(diferencias.df.ord, aes(x= Sujeto , y=Diferencia)) +
+  geom_line(aes(color=Tratamiento))+
+  geom_point(aes(color=Tratamiento))
+diferencias.linea
 ```
 
 # Utilizando Kruskal Willis
