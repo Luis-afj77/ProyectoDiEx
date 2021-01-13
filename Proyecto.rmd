@@ -69,6 +69,33 @@ Porcentaje.df
 
 ```
 
+# Medias
+```{r}
+resumen <- function(data, varname, groupnames){
+  resumen_funcion <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      sd = sd(x[[col]], na.rm=TRUE))
+  }
+  data_sum<-ddply(data, groupnames, .fun=resumen_funcion,
+                  varname)
+  data_sum <- rename(data_sum, c("mean" = varname))
+ return(data_sum)
+}
+
+
+resumen.df <- resumen(Porcentaje.df, varname = "porcentaje", groupnames=c("tratamiento", "periodo"))
+resumen.df
+# Convert dose to a factor variable
+resumen.df$porcentaje=as.factor(resumen.df$porcentaje)
+
+# grafica de medias con desviacion
+medias <- ggplot(resumen.df, aes(x=periodo, y=porcentaje, group= tratamiento, color=tratamiento)) + 
+  geom_line() +
+  geom_point()+
+  geom_errorbar(aes(ymin=porcentaje-sd, ymax=porcentaje+sd), width=.2,
+                 position=position_dodge(0.05))
+medias
+```
 
 # Realizamos lo mismo con el grupo control
 
