@@ -65,43 +65,6 @@ Porcentaje.df
 
 ```
 
-# Gráfica de cómo va avanzando cada paciente
-```{r}
-Porcentaje.df$periodo <- as.factor(Porcentaje.df$periodo)
-Porcentaje.df$sujeto <- as.factor(Porcentaje.df$sujeto)
-
-individual <- ggplot(Porcentaje.df, aes(x = periodo, y = porcentaje, color = sujeto, group = sujeto)) + geom_point() + geom_line()
-individual.facet <- individual + facet_grid(vars(tratamiento), scales = "free")
-individual.facet
-individual
-```
-
-# Gráfica de las medias
-```{r}
-media.pla0 <- mean(filter(Porcentaje.df, tratamiento == "placebo", periodo == "0")$porcentaje)
-media.pla1 <- mean(filter(Porcentaje.df, tratamiento == "placebo", periodo == "1")$porcentaje)
-media.pla2 <- mean(filter(Porcentaje.df, tratamiento == "placebo", periodo == "2")$porcentaje)
-media.pla3 <- mean(filter(Porcentaje.df, tratamiento == "placebo", periodo == "3")$porcentaje)
-media.pla4 <- mean(filter(Porcentaje.df, tratamiento == "placebo", periodo == "4")$porcentaje)
-media.pro0 <- mean(filter(Porcentaje.df, tratamiento == "progabide", periodo == "0")$porcentaje)
-media.pro1 <- mean(filter(Porcentaje.df, tratamiento == "progabide", periodo == "1")$porcentaje)
-media.pro2 <- mean(filter(Porcentaje.df, tratamiento == "progabide", periodo == "2")$porcentaje)
-media.pro3 <- mean(filter(Porcentaje.df, tratamiento == "progabide", periodo == "3")$porcentaje)
-media.pro4 <- mean(filter(Porcentaje.df, tratamiento == "progabide", periodo == "4")$porcentaje)
-medias.vec <- c(media.pla0, media.pla1, media.pla2, media.pla3, media.pla4, media.pro0, media.pro1, media.pro2, media.pro3, media.pro4)
-tratamiento_medias <- c("placebo", "placebo", "placebo", "placebo", "placebo", "progabide", "progabide", "progabide", "progabide", "progabide")
-periodo_medias <- c(0, 1, 2, 3, 4, 0, 1, 2, 3, 4)
-medias.df <- data.frame(medias.vec, tratamiento_medias, periodo_medias)
-
-#cambiando nnombres
-colnames(medias.df)
-names(medias.df)[names(medias.df) == "porcentaje promedio"] <- "porcentaje_promedio"
-names(medias.df)[names(medias.df) == "tratamiento_medias"] <- "tratamiento"
-names(medias.df)[names(medias.df) == "periodo_medias"] <- "periodo"
-medias <- ggplot(medias.df, aes(x = periodo, y = porcentaje_promedio, color = tratamiento, group = tratamiento)) + geom_point() + geom_line()
-medias
-```
-
 
 # Realizamos lo mismo con el grupo control
 
