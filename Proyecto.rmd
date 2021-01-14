@@ -1,5 +1,5 @@
 ---
-title: "Proyecto equipo 4"
+title: " Proyecto equipo 4 "
 output: html_notebook
 ---
 
