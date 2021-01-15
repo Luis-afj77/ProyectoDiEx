@@ -62,11 +62,14 @@ Porcentaje.df$periodo <- as.factor(Porcentaje.df$periodo)
 
 #Añadiendo la base como periodo 0
 period0 <- data.frame(sujeto= Data_cocinada$sujeto, base= Data_cocinada$base, crisis= Data_cocinada$base, periodo = 0, tratamiento = Data_cocinada$tratamiento, porcentaje= 100)
+
 period0$periodo <- as.factor(period0$periodo) 
 Porcentaje.df <- rbind(Porcentaje.df, period0)
 
 Porcentaje.df
 
+#Se repiten 4 veces los mismos datos, aqui ya los quito
+period0_ND <- period0 %>% distinct
 ```
 
 # Medias
