@@ -24,10 +24,9 @@ pwr.anova.test(k=5, n=NULL, f=0.8, sig.level = 0.05, power= 0.8)
 # obtenemos toda la base de datos de epilepsia
 data_cruda<-MASS::epil
 data_cruda
-```
 
 # Quitar los outliers
-```{r}
+
 #buscamos donde estan los outliers, sujetos 49 y 25
 data_cruda
 which(data_cruda$subject == 25)
@@ -36,22 +35,37 @@ which(data_cruda$subject == 25)
 
 data_cruda_out <- data_cruda[-c(97, 98, 99, 100, 193, 194, 195, 196),]
 data_cruda_out
-```
 
-# Base de datos de porcentaje de diferencia
-```{r}
+# data cocinada (línea base/4)
 Data_cocinada <- data.frame(data_cruda$subject, data_cruda$base /4, data_cruda$y, data_cruda$period, data_cruda$trt)
-
-
 #cambiando nombres
 colnames(Data_cocinada)
 names(Data_cocinada)[names(Data_cocinada) == "data_cruda.subject"] <- "sujeto"
-names(Data_cocinada)[names(Data_cocinada) == "data_cruda.base.4"] <- "base"                 
+names(Data_cocinada)[names(Data_cocinada) == "data_cruda.base.4"] <- "base"
 names(Data_cocinada)[names(Data_cocinada) == "data_cruda.y"] <- "crisis"
 names(Data_cocinada)[names(Data_cocinada) == "data_cruda.period"] <- "periodo"
 names(Data_cocinada)[names(Data_cocinada) == "data_cruda.trt"] <- "tratamiento"
 Data_cocinada
+# data sin linea base
+Data_condimentada <- data.frame(Data_cocinada$sujeto, Data_cocinada$crisis, Data_cocinada$periodo, Data_cocinada$tratamiento)
+names(Data_condimentada)[names(Data_condimentada) == "Data_cocinada.sujeto"] <- "sujeto"
+names(Data_condimentada)[names(Data_condimentada) == "Data_cocinada.crisis"] <- "crisis"
+names(Data_condimentada)[names(Data_condimentada) == "Data_cocinada.periodo"] <- "periodo"
+names(Data_condimentada)[names(Data_condimentada) == "Data_cocinada.tratamiento"] <- "tratamiento"
+colnames(Data_condimentada)
+# Poniendo la línea base como periodo 0
+colnames(period0)
+period0 <- data.frame(sujeto= Data_cocinada$sujeto, crisis= Data_cocinada$base, periodo = 0, tratamiento = Data_cocinada$tratamiento)
 
+period0$periodo <- as.factor(period0$periodo)
+
+Data_condimentada <- rbind(Data_condimentada, period0)
+
+Data_condimentada
+```
+
+# Base de datos de porcentaje de diferencia
+```{r}
 # Añadiendo el porcetaje de diferencia
 Porcentaje.diferencia <- (Data_cocinada$crisis / Data_cocinada$base)*100
 Porcentaje.diferencia 
@@ -59,17 +73,29 @@ Porcentaje.df <- cbind(Data_cocinada, Porcentaje.diferencia)
 names(Porcentaje.df)[names(Porcentaje.df) == "Porcentaje.diferencia"] <- "porcentaje"
 names(Porcentaje.df)[names(Porcentaje.df) == "data_cruda.trt"] <- "tratamiento"
 Porcentaje.df$periodo <- as.factor(Porcentaje.df$periodo)
+```
 
-#Añadiendo la base como periodo 0
-period0 <- data.frame(sujeto= Data_cocinada$sujeto, base= Data_cocinada$base, crisis= Data_cocinada$base, periodo = 0, tratamiento = Data_cocinada$tratamiento, porcentaje= 100)
+# Boxplots
+```{r}
+boxplots_cruda <- ggplot(Data_condimentada, aes(x= periodo, y= crisis, fill= tratamiento)) +
+  geom_boxplot()
+boxplots_cruda
 
-period0$periodo <- as.factor(period0$periodo) 
-Porcentaje.df <- rbind(Porcentaje.df, period0)
+boxplots_porcentaje <- ggplot(Porcentaje.df, aes(x= periodo, y= porcentaje, fill= tratamiento)) +
+  geom_boxplot()
+boxplots_porcentaje
+```
 
-Porcentaje.df
+# Prueba wilcoxon datos crudos
+```{r}
+pairwise.wilcox.test(x=as.numeric(Data_cocinada$crisis), g=as.factor(Data_cocinada$tratamiento),
+                     p.adjust.method = "bonferroni",paired = FALSE)
+Data_wilcoxon <- Data_cocinada
 
-#Se repiten 4 veces los mismos datos, aqui ya los quito
-period0_ND <- period0 %>% distinct
+Data_wilcoxon$Vector1<-paste0(Data_wilcoxon$tratamiento, Data_wilcoxon$periodo)
+
+pairwise.wilcox.test(x=as.numeric(Data_wilcoxon$crisis), g=as.factor(Data_wilcoxon$Vector1),
+                     p.adjust.method = "bonferroni",paired = FALSE)
 ```
 
 # Medias
