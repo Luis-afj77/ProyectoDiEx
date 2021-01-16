@@ -12,12 +12,8 @@ library(fitdistrplus)
 ```
 
 
-```{r}
-pwr.anova.test(k=5, n=NULL, f=0.8, sig.level = 0.05, power= 0.8)
-#Me arroja que para obtener resultados significativos, almenos necesito 4,78 muestras por grupo, nosotros tenemos 21 por lo que estamos bien.
-```
 
-# Comenzando a obtener los datos de nuestros sujetos
+# Comenzando a obtener los datos de nuestros sujetos:
 ```{r}
 ##Linea Base
 
@@ -54,7 +50,6 @@ names(Data_condimentada)[names(Data_condimentada) == "Data_cocinada.periodo"] <-
 names(Data_condimentada)[names(Data_condimentada) == "Data_cocinada.tratamiento"] <- "tratamiento"
 colnames(Data_condimentada)
 # Poniendo la línea base como periodo 0
-colnames(period0)
 period0 <- data.frame(sujeto= Data_cocinada$sujeto, crisis= Data_cocinada$base, periodo = 0, tratamiento = Data_cocinada$tratamiento)
 
 period0$periodo <- as.factor(period0$periodo)
@@ -63,9 +58,11 @@ period0_ND <- period0 %>% distinct
 Data_condimentada <- rbind(Data_condimentada, period0_ND)
 
 Data_condimentada
+Data_condimentada <- Data_condimentada[with(Data_condimentada, order(Data_condimentada$sujeto)), ]
+#Con este data.frame ya podemos hacer nuestras pruebas de hipotesis.
 ```
 
-# Base de datos de porcentaje de diferencia
+# Base de datos de porcentaje de diferencia:
 ```{r}
 # Añadiendo el porcetaje de diferencia
 Porcentaje.diferencia <- (Data_cocinada$crisis / Data_cocinada$base)*100
@@ -75,28 +72,57 @@ names(Porcentaje.df)[names(Porcentaje.df) == "Porcentaje.diferencia"] <- "porcen
 names(Porcentaje.df)[names(Porcentaje.df) == "data_cruda.trt"] <- "tratamiento"
 Porcentaje.df$periodo <- as.factor(Porcentaje.df$periodo)
 ```
+# Análisis descriptivo:
+## De la edad de los pacientes
+```{r}
+Data_condimentada
 
-# Boxplots
+median()
+mean()
+mode()
+
+```
+
+
+# Boxplots:
 ```{r}
 boxplots_cruda <- ggplot(Data_condimentada, aes(x= periodo, y= crisis, fill= tratamiento)) +
-  geom_boxplot()
+  geom_boxplot() +
+  ggtitle("Número de crisis epilépticas de los sujetos por cada periodo")
 boxplots_cruda
 
 boxplots_porcentaje <- ggplot(Porcentaje.df, aes(x= periodo, y= porcentaje, fill= tratamiento)) +
-  geom_boxplot()
+  geom_boxplot() +
+ggtitle("Porcentaje de crisis epilépticas por periodo con respecto a línea base")
 boxplots_porcentaje
 ```
 
 # Prueba wilcoxon datos crudos
 ```{r}
+#Aqui no diferencia a los periodos, por lo que  comparamos entre placebo y progabide sin la base ya que la linea base sirve para comparar.
 pairwise.wilcox.test(x=as.numeric(Data_cocinada$crisis), g=as.factor(Data_cocinada$tratamiento),
                      p.adjust.method = "bonferroni",paired = FALSE)
-Data_wilcoxon <- Data_cocinada
 
+#A1 de Alan.doc
+Data_wilcoxon <- Data_condimentada
+
+#Periodo + tratamiento en una sola columna
 Data_wilcoxon$Vector1<-paste0(Data_wilcoxon$tratamiento, Data_wilcoxon$periodo)
 
 pairwise.wilcox.test(x=as.numeric(Data_wilcoxon$crisis), g=as.factor(Data_wilcoxon$Vector1),
-                     p.adjust.method = "bonferroni",paired = FALSE)
+                     p.adjust.method = "bonferroni",paired = FALSE, exact=FALSE)
+
+#optimización
+i=0
+while (i < 5) {
+pl= paste0("placebo",i)
+pr= paste0("progabide",i)
+w <- wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 ==pl], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == pr], paired = FALSE, alternative = "greater",exact=FALSE)
+  i= i+1
+print(paste0("grupo",i))
+print(w)
+}
+
 ```
 
 # Medias
