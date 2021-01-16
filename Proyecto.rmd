@@ -58,8 +58,9 @@ colnames(period0)
 period0 <- data.frame(sujeto= Data_cocinada$sujeto, crisis= Data_cocinada$base, periodo = 0, tratamiento = Data_cocinada$tratamiento)
 
 period0$periodo <- as.factor(period0$periodo)
+period0_ND <- period0 %>% distinct
 
-Data_condimentada <- rbind(Data_condimentada, period0)
+Data_condimentada <- rbind(Data_condimentada, period0_ND)
 
 Data_condimentada
 ```
