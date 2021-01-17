@@ -72,17 +72,6 @@ names(Porcentaje.df)[names(Porcentaje.df) == "Porcentaje.diferencia"] <- "porcen
 names(Porcentaje.df)[names(Porcentaje.df) == "data_cruda.trt"] <- "tratamiento"
 Porcentaje.df$periodo <- as.factor(Porcentaje.df$periodo)
 ```
-# Análisis descriptivo:
-## De la edad de los pacientes
-```{r}
-Data_condimentada
-
-median()
-mean()
-mode()
-
-```
-
 
 # Boxplots:
 ```{r}
@@ -175,6 +164,24 @@ medias <- ggplot(resumen.df, aes(x=periodo, y=porcentaje, group= tratamiento, co
 medias
 ```
 
+# Gráfica de cómo va avanzando cada paciente
+
+sujetos <- sujetos_progabide$subject
+sujetos.df <- data.frame(sujetos, sujetos_progabide$y, sujetos_progabide$period)
+
+names(sujetos.df)[names(sujetos.df) == "sujetos_progabide.y"] <- "crisis"
+names(sujetos.df)[names(sujetos.df) == "sujetos_progabide.period"] <- "periodo"
+
+periodo0 <- data.frame(sujetos = sujetos_progabide$subject, crisis= sujetos_progabide$base, periodo = 0 )
+
+sujetos.df <- rbind(sujetos.df, periodo0)
+sujetos.df$periodo <- as.factor(sujetos.df$periodo)
+sujetos.df$sujetos <- as.factor(sujetos.df$sujetos)
+
+individual <- ggplot(sujetos.df, aes(x = periodo, y = crisis, color = sujetos, group = sujetos)) + geom_point() + geom_line()
+individual
+
+
 # Realizamos lo mismo con el grupo control
 
 # Nos quedamos solo con los datos de aquellos con placebo 
@@ -244,6 +251,36 @@ View(sujetos.control)
 
 indcontrol <- ggplot(sujetos.control, aes(x = periodo, y = crisis, color = sujetos, group = sujetos)) + geom_point() + geom_line()
 indcontrol
+
+
+# Análisis  de estadística descriptiva
+
+media.edpl <- mean(sujetos_placebo$age)
+media.edpr <- mean(sujetos_progabide$age)
+mediana.edpl <- median(sujetos_placebo$age)
+mediana.edpr <- median(sujetos_progabide$age)
+#install.packages("modeest")
+#library(modeest)
+moda.edpl <- mfv(sujetos_placebo$age)
+moda.edpr <- mfv(sujetos_progabide$age)
+sd.edpl <- sd(sujetos_placebo$age)
+sd.edpr <- sd(sujetos_progabide$age)
+var.edpl <- var(sujetos_placebo$age)
+var.edpr <- var(sujetos_progabide$age)
+q.edpl <- quantile(sujetos_placebo$age)
+q.edpr <- quantile(sujetos_progabide$age)
+iqr.edpl <- IQR(sujetos_placebo$age)
+iqr.edpr <- IQR(sujetos_progabide$age)
+cv.edpl <- sd.edpl/media.edpl
+cv.edpr <- sd.edpr/media.edpr
+ran.edpl <- range(sujetos_placebo$age)
+ran.edpr <- range(sujetos_progabide$age)
+
+# Número de pacientes 
+
+sujetos_placebo$subject # 28 pacientes
+sujetos_progabide$subject # 30 pacientes
+
 
 ## Pruebas estadisticas de linea base para observar que tipo de distribucion es
 
