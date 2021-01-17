@@ -113,14 +113,36 @@ pairwise.wilcox.test(x=as.numeric(Data_wilcoxon$crisis), g=as.factor(Data_wilcox
                      p.adjust.method = "bonferroni",paired = FALSE, exact=FALSE)
 
 #optimización
-i=0
+i <- 0
 while (i < 5) {
-pl= paste0("placebo",i)
-pr= paste0("progabide",i)
-w <- wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 ==pl], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == pr], paired = FALSE, alternative = "greater",exact=FALSE)
-  i= i+1
-print(paste0("grupo",i))
-print(w)
+  pl <- paste0("placebo",i)
+  j <- 0
+  while (j < 5) {
+    pr <- paste0("progabide",j)
+    w <- wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 ==pl], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == pr], paired = FALSE, alternative = "greater",exact=FALSE)
+    j <- j+1
+    print(paste("comparando",pl,"con",pr))
+    print(w)
+  }
+  j <- 0
+  while (j < 5) {
+    pr <- paste0("placebo",j)
+    w <- wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 ==pl], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == pr], paired = FALSE, alternative = "greater",exact=FALSE)
+    j <- j+1
+    print(paste("comparando",pl,"con",pr))
+    print(w)
+  }
+  j <- 0
+  pr2 <- paste0("progabide",i)
+  while (j < 5) {
+    print("entro")
+    pr <- paste0("progabide",j)
+    w <- wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 ==pr2], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == pr], paired = FALSE, alternative = "greater",exact=FALSE)
+    j <- j+1
+    print(paste("comparando",pr2,"con",pr))
+    print(w)
+  }
+    i<- i+1
 }
 
 ```
