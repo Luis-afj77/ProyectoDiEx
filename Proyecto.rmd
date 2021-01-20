@@ -198,14 +198,8 @@ wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo2"], Data_wilc
 wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo3"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo4"], paired = FALSE, alternative = "greater")
 ```
 
-# Análisis  de estadística descriptiva
+# Control 1,2,3,4 (las semanas)
 ```{r}
-#install.packages("modeest")
-sujetos_placebo<-subset(data_cruda, trt == "placebo")
-sujetos_progabide<-subset(data_cruda, trt == "progabide")
-
-## Control 1,2,3,4 (las semanas)
-
 sujetos_placebo1 <- subset(sujetos_placebo, period == "1")
 control1 <- data.frame(sujetos_placebo1$y,sujetos_placebo1$age,sujetos_placebo1$subject)
 control1 <- rename(control1 %>% distinct, crisis1 = "sujetos_placebo1.y" , edad="sujetos_placebo1.age",sujeto= "sujetos_placebo1.subject")
@@ -223,55 +217,54 @@ control4 <- data.frame(sujetos_placebo4$y,sujetos_placebo4$age,sujetos_placebo4$
 control4 <- rename(control4 %>% distinct, crisis4 = "sujetos_placebo4.y" , edad="sujetos_placebo4.age",sujeto= "sujetos_placebo4.subject")
 controles <- data.frame(control0,control1,control2,control3,control4)
 ```
+
 # Número de pacientes 
 ```{r}
 sujetos_placebo$subject # 28 pacientes
 sujetos_progabide$subject # 30 pacientes
 ```
+# Análisis  de estadística descriptiva
+```{r}
+#install.packages("modeest")
+sujetos_placebo<-subset(data_cruda, trt == "placebo")
+sujetos_progabide<-subset(data_cruda, trt == "progabide")
+```
+
 # Media:
 ```{r}
-media.edpl <- mean(sujetos_placebo$age)
-media.edpr <- mean(sujetos_progabide$age)
+media <- mean(data_cruda$age)
 ```
 # Mediana:
 ```{r}
-mediana.edpl <- median(sujetos_placebo$age)
-mediana.edpr <- median(sujetos_progabide$age)
+mediana <- median(data_cruda$age)
 ```
 # Moda:
 ```{r}
-moda.edpl <- mfv(sujetos_placebo$age)
-moda.edpr <- mfv(sujetos_progabide$age)
+moda <- mfv(data_cruda$age)
 ```
 # Desviación Estandar
 ```{r}
-sd.edpl <- sd(sujetos_placebo$age)
-sd.edpr <- sd(sujetos_progabide$age)
+sd <- sd(data_cruda$age)
 ```
 # Varianza
 ```{r}
-var.edpl <- var(sujetos_placebo$age)
-var.edpr <- var(sujetos_progabide$age)
+var <- var(data_cruda$age)
 ```
-# cuantiles
+# Cuantiles
 ```{r}
-q.edpl <- quantile(sujetos_placebo$age)
-q.edpr <- quantile(sujetos_progabide$age)
+q <- quantile(data_cruda$age)
 ```
 # IQR
 ```{r}
-iqr.edpl <- IQR(sujetos_placebo$age)
-iqr.edpr <- IQR(sujetos_progabide$age)
+iqr <- IQR(data_cruda$age)
 ```
-# covarianza
+# Covarianza
 ```{r}
-cv.edpl <- sd.edpl/media.edpl
-cv.edpr <- sd.edpr/media.edpr
+cv <- sd/media
 ```
 # Rango
 ```{r}
-ran.edpl <- range(sujetos_placebo$age)
-ran.edpr <- range(sujetos_progabide$age)
+ran <- range(data_cruda$age)
 ```
 # Pruebas de Normalidad
 ```{r}
@@ -303,7 +296,7 @@ library(fitdistrplus)
 descdist(control4$crisis4)# se ve que también es beta
 ```
 
-#Codigos que no se muy bien:
+# Códigos para las gráficas:
 
 # Gráfica de cómo va avanzando cada control
 ```{r}
@@ -321,7 +314,8 @@ sujetos.control$periodo <- as.factor(sujetos.control$periodo)
 sujetos.control$sujetos <- as.factor(sujetos.control$sujetos)
 View(sujetos.control)
 
-indcontrol <- ggplot(sujetos.control, aes(x = periodo, y = crisis, color = sujetos, group = sujetos)) + geom_point() + geom_line()
+indcontrol <- ggplot(sujetos.control, aes(x = periodo, y = crisis, color = sujetos, group = sujetos)) + geom_point() + geom_line()+
+  labs(title = "Crisis de cada paciente del grupo control con respecto al tiempo", x = "periodo", y = "crisis") + theme(plot.title = element_text(size = 16, color = "#64BBCC", face = "italic", "bold", family ="serif"), text = element_text(size = 9), legend.title = element_text(size = 9), legend.text = element_text(size = 9))
 indcontrol
 
 ```
@@ -341,7 +335,8 @@ sujetos.df <- rbind(sujetos.df, periodo0)
 sujetos.df$periodo <- as.factor(sujetos.df$periodo)
 sujetos.df$sujetos <- as.factor(sujetos.df$sujetos)
 
-individual <- ggplot(sujetos.df, aes(x = periodo, y = crisis, color = sujetos, group = sujetos)) + geom_point() + geom_line()
+individual <- ggplot(sujetos.df, aes(x = periodo, y = crisis, color = sujetos, group = sujetos)) + geom_point() + geom_line() +
+  labs(title = "Crisis de cada paciente del grupo experimental con respecto al tiempo", x = "periodo", y = "crisis") + theme(plot.title = element_text(size = 16, color = "#D3B7ED", face = "italic", "bold", family ="serif"), text = element_text(size = 9), legend.title = element_text(size = 9), legend.text = element_text(size = 9))
 individual
 
 ```
@@ -363,19 +358,6 @@ bpcontrol <- ggplot(boxplotsc.df, aes(x= periodo, y= crisis, color=periodo)) +
   geom_boxplot()
 bpcontrol
 
-```
-
-# Codigo que no sé --> 
-```{r}
-summary(controles) #tendríamos que cambiar los sujetos a factores
-
-controles$sujeto <- as.factor(controles$sujeto)
-controles$sujeto.1 <- as.factor(controles$sujeto.1)
-controles$sujeto.2 <- as.factor(controles$sujeto.2)
-controles$sujeto.3 <- as.factor(controles$sujeto.3)
-controles$sujeto.4 <- as.factor(controles$sujeto.4)
-
-summary(controles) # listo :)
 ```
 
 
