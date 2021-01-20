@@ -67,7 +67,6 @@ Data_condimentada <- Data_condimentada[with(Data_condimentada, order(Data_condim
 ```{r}
 # Añadiendo el porcetaje de diferencia
 Porcentaje.diferencia <- (Data_cocinada$crisis / Data_cocinada$base)*100
-Porcentaje.diferencia 
 Porcentaje.df <- cbind(Data_cocinada, Porcentaje.diferencia)
 names(Porcentaje.df)[names(Porcentaje.df) == "Porcentaje.diferencia"] <- "porcentaje"
 names(Porcentaje.df)[names(Porcentaje.df) == "data_cruda.trt"] <- "tratamiento"
@@ -101,40 +100,6 @@ Data_wilcoxon$Vector1<-paste0(Data_wilcoxon$tratamiento, Data_wilcoxon$periodo)
 
 pairwise.wilcox.test(x=as.numeric(Data_wilcoxon$crisis), g=as.factor(Data_wilcoxon$Vector1),
                      p.adjust.method = "bonferroni",paired = FALSE, exact=FALSE)
-
-#optimización
-i <- 0
-while (i < 5) {
-  pl <- paste0("placebo",i)
-  j <- 0
-  while (j < 5) {
-    pr <- paste0("progabide",j)
-    w <- wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 ==pl], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == pr], paired = FALSE, alternative = "greater",exact=FALSE)
-    j <- j+1
-    print(paste("comparando",pl,"con",pr))
-    print(w)
-  }
-  j <- 0
-  while (j < 5) {
-    pr <- paste0("placebo",j)
-    w <- wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 ==pl], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == pr], paired = FALSE, alternative = "greater",exact=FALSE)
-    j <- j+1
-    print(paste("comparando",pl,"con",pr))
-    print(w)
-  }
-  j <- 0
-  pr2 <- paste0("progabide",i)
-  while (j < 5) {
-    print("entro")
-    pr <- paste0("progabide",j)
-    w <- wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 ==pr2], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == pr], paired = FALSE, alternative = "greater",exact=FALSE)
-    j <- j+1
-    print(paste("comparando",pr2,"con",pr))
-    print(w)
-  }
-    i<- i+1
-}
-
 ```
 # Wilcoxon Uno por uno, placebo vs progabide
 ```{r}
@@ -169,33 +134,33 @@ wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo4"], Data_wilc
 wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo4"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide4"], paired = FALSE, alternative = "greater")
 
 
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide1"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide2"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide3"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide4"], paired = FALSE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide1"], paired = TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide2"], paired = TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide3"], paired = TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide4"], paired = TRUE, alternative = "greater")
 
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide4"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide2"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide3"], paired = FALSE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide4"], paired = TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide2"], paired = TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide3"], paired = TRUE, alternative = "greater")
 
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide2"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide4"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide2"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide3"], paired = FALSE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide2"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide4"], paired = TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide2"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide3"], paired = TRUE, alternative = "greater")
 
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide3"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide4"], paired = FALSE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide3"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide4"], paired = TRUE, alternative = "greater")
 
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo1"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo2"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo3"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo4"], paired = FALSE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo1"], paired =TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo2"], paired = TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo3"], paired = TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo4"], paired = TRUE, alternative = "greater")
 
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo2"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo3"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo4"], paired = FALSE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo2"], paired = TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo3"], paired = TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo1"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo4"], paired = TRUE, alternative = "greater")
 
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo2"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo3"], paired = FALSE, alternative = "greater")
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo2"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo4"], paired = FALSE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo2"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo3"], paired = TRUE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo2"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo4"], paired = TRUE, alternative = "greater")
 
-wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo3"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo4"], paired = FALSE, alternative = "greater")
+wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo3"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo4"], paired = TRUE, alternative = "greater")
 ```
 
 # Análisis  de estadística descriptiva
@@ -221,12 +186,13 @@ control3 <- rename(control3 %>% distinct, crisis3 = "sujetos_placebo3.y" , edad=
 sujetos_placebo4 <- subset(sujetos_placebo, period == "4")
 control4 <- data.frame(sujetos_placebo4$y,sujetos_placebo4$age,sujetos_placebo4$subject)
 control4 <- rename(control4 %>% distinct, crisis4 = "sujetos_placebo4.y" , edad="sujetos_placebo4.age",sujeto= "sujetos_placebo4.subject")
+
 controles <- data.frame(control0,control1,control2,control3,control4)
 ```
 # Número de pacientes 
 ```{r}
-sujetos_placebo$subject # 28 pacientes
-sujetos_progabide$subject # 30 pacientes
+length(sujetos_placebo$subject) # 28 pacientes
+length(sujetos_progabide$subject) # 31 pacientes
 ```
 # Media:
 ```{r}
