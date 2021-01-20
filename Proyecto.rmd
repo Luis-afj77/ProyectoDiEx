@@ -20,8 +20,8 @@ library(modeest)
 
 # obtenemos toda la base de datos de epilepsia
 data_cruda<-MASS::epil
+data_cruda<- data_cruda %>% distinct
 data_cruda
-
 # Quitar los outliers
 
 #buscamos donde estan los outliers, sujetos 49 y 25
@@ -198,39 +198,51 @@ sujetos_progabide<-subset(data_cruda, trt == "progabide")
 
 # Media:
 ```{r}
-media <- mean(data_cruda$age)
+data_descriptiva <- data_cruda %>% dplyr::select(age,subject)
+data_descriptiva <- data %>% distinct
+data_descriptiva
+media <- mean(data_descriptiva$age)
+media
 ```
 # Mediana:
 ```{r}
-mediana <- median(data_cruda$age)
+mediana <- median(data_descriptiva$age)
+mediana
 ```
 # Moda:
 ```{r}
-moda <- mfv(data_cruda$age)
+moda <- mfv(data_descriptiva$age)
+moda
 ```
 # Desviación Estandar
 ```{r}
-sd <- sd(data_cruda$age)
+sd <- sd(data_descriptiva$age)
+sd
 ```
 # Varianza
 ```{r}
-var <- var(data_cruda$age)
+var <- var(data_descriptiva$age)
+var
 ```
 # Cuantiles
 ```{r}
-q <- quantile(data_cruda$age)
+q <- quantile(data_descriptiva$age)
+q
 ```
 # IQR
 ```{r}
-iqr <- IQR(data_cruda$age)
+iqr <- IQR(data_descriptiva$age)
+iqr
 ```
 # Covarianza
 ```{r}
 cv <- sd/media
+cv
 ```
 # Rango
 ```{r}
-ran <- range(data_cruda$age)
+ran <- range(data_descriptiva$age)
+ran
 ```
 # Pruebas de Normalidad
 ```{r}
@@ -278,7 +290,6 @@ p0.c <- data.frame(sujetos = sujetos_placebo$subject, crisis= sujetos_placebo$ba
 sujetos.control <- rbind(sujetos.control, p0.c)
 sujetos.control$periodo <- as.factor(sujetos.control$periodo)
 sujetos.control$sujetos <- as.factor(sujetos.control$sujetos)
-View(sujetos.control)
 
 indcontrol <- ggplot(sujetos.control, aes(x = periodo, y = crisis, color = sujetos, group = sujetos)) + geom_point() + geom_line()+
   labs(title = "Crisis de cada paciente del grupo control con respecto al tiempo", x = "periodo", y = "crisis") + theme(plot.title = element_text(size = 16, color = "#64BBCC", face = "italic", "bold", family ="serif"), text = element_text(size = 9), legend.title = element_text(size = 9), legend.text = element_text(size = 9))
