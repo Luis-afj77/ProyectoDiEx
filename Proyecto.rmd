@@ -221,6 +221,8 @@ cv <- sd/media
 cv
 ran <- range(data_descriptiva_edad$age)
 ran
+edad_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
+write.csv(edad_descriptiva,"C:/Users/luisf/EstaDescriptiva_edad.csv", row.names = FALSE)
 ```
 # De las crisis en grupos placebo
 ```{r}
