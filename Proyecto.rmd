@@ -192,8 +192,8 @@ controles <- data.frame(control0,control1,control2,control3,control4)
 
 # Número de pacientes 
 ```{r}
-length(sujetos_placebo$subject) # 28 pacientes
-length(sujetos_progabide$subject) # 31 pacientes
+length(sujetos_placebo$subject)/4# 28 pacientes
+length(sujetos_progabide$subject)/4 # 31 pacientes
 ```
 ## Análisis de estadística descriptiva:
 ```{r}
@@ -225,7 +225,7 @@ ran
 edad_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
 write.csv(edad_descriptiva,"C:/Users/luisf/EstaDescriptiva_edad.csv", row.names = FALSE)
 ```
-# De las crisis en grupos placebo
+# De las crisis en grupos placebo (no se si se usará)
 ```{r}
 media <- mean(sujetos_placebo$y)
 media
@@ -248,9 +248,9 @@ ran
 crisisplacebo_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
 write.csv(crisisplacebo_descriptiva,"C:/Users/luisf/EstaDescriptiva_crisisplacebo.csv", row.names = FALSE)
 ```
-# placebo línea base ERROR NAS
+# placebo línea base: recordemos que es suma de 8 SEMANAS
 ```{r}
-placebo_periodo0 <- sujetos_placebo %>% filter(base=="")
+placebo_periodo0 <- sujetos_placebo %>% dplyr::select(base,subject) %>% distinct
 media <- mean(placebo_periodo0$base)
 media
 mediana <- median(placebo_periodo0$base)
@@ -270,7 +270,6 @@ cv
 ran <- range(placebo_periodo0$base)
 ran
 placebobase_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
-write.csv(placebobase_descriptiva,"C:/Users/luisf/EstaDescriptiva_placebobase.csv", row.names = FALSE)
 ```
 
 # placebo periodo 1
@@ -295,7 +294,6 @@ cv
 ran <- range(placebo_periodo1$y)
 ran
 placeboperiodo1_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
-write.csv(placeboperiodo1_descriptiva,"C:/Users/luisf/EstaDescriptiva_placeboperiodo1.csv", row.names = FALSE)
 ```
 
 # placebo periodo 2
@@ -320,7 +318,6 @@ cv
 ran <- range(placebo_periodo2$y)
 ran
 placeboperiodo2_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
-write.csv(placeboperiodo2_descriptiva,"C:/Users/luisf/EstaDescriptiva_placeboperiodo2.csv", row.names = FALSE)
 ```
 
 # placebo periodo 3
@@ -345,7 +342,6 @@ cv
 ran <- range(placebo_periodo3$y)
 ran
 placeboperiodo3_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
-write.csv(placeboperiodo3_descriptiva,"C:/Users/luisf/EstaDescriptiva_placeboperiodo3.csv", row.names = FALSE)
 ```
 
 # placebo periodo 4
@@ -370,10 +366,13 @@ cv
 ran <- range(placebo_periodo4$y)
 ran
 placeboperiodo4_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
-write.csv(placeboperiodo4_descriptiva,"C:/Users/luisf/EstaDescriptiva_placeboperiodo4.csv", row.names = FALSE)
+
+placebo_periodos <- data.frame(placebobase_descriptiva,placeboperiodo1_descriptiva,placeboperiodo2_descriptiva,placeboperiodo3_descriptiva,placeboperiodo4_descriptiva)
+
+write.csv(placebo_periodos,"C:/Users/luisf/EstaDescriptiva_placeboperiodos.csv", row.names = FALSE)
 ```
 
-# De las crisis en grupos progabide
+# De las crisis en grupos progabide (no se si usaremos)
 ```{r}
 media <- mean(sujetos_progabide$y)
 media
@@ -396,29 +395,28 @@ ran
 progabidecrisis_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
 write.csv(progabidecrisis_descriptiva,"C:/Users/luisf/EstaDescriptiva_progabidecrisis.csv", row.names = FALSE)
 ```
-# progabide línea base ERROR NAS
+# progabide línea base 
 ```{r}
-progabide_periodo0 <- sujetos_progabide %>% filter(period=="0")
-media <- mean(progabide_periodo0$y)
+progabide_periodo0 <- sujetos_progabide %>% dplyr::select(base,subject) %>% distinct
+media <- mean(progabide_periodo0$base)
 media
-mediana <- median(progabide_periodo0$y)
+mediana <- median(progabide_periodo0$base)
 mediana
-moda <- mfv(progabide_periodo0$y)
+moda <- mfv(progabide_periodo0$base)
 moda
-sd <- sd(progabide_periodo0$y)
+sd <- sd(progabide_periodo0$base)
 sd
-var <- var(progabide_periodo0$y)
+var <- var(progabide_periodo0$base)
 var
-q <- quantile(progabide_periodo0$y)
+q <- quantile(progabide_periodo0$base)
 q
-iqr <- IQR(progabide_periodo0$y)
+iqr <- IQR(progabide_periodo0$base)
 iqr
 cv <- sd/media
 cv
-ran <- range(progabide_periodo0$y)
+ran <- range(progabide_periodo0$base)
 ran
 progabidebase_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
-write.csv(progabidebase_descriptiva,"C:/Users/luisf/EstaDescriptiva_progabidebase.csv", row.names = FALSE)
 ```
 
 # progabide periodo 1
@@ -443,7 +441,6 @@ cv
 ran <- range(progabide_periodo1$y)
 ran
 progabideperiodo1_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
-write.csv(progabideperiodo1_descriptiva,"C:/Users/luisf/EstaDescriptiva_progabideperiodo1.csv", row.names = FALSE)
 ```
 
 # progabide periodo 2
@@ -452,9 +449,9 @@ progabide_periodo2 <- sujetos_progabide %>% filter(period=="2")
 media <- mean(progabide_periodo2$y)
 media
 mediana <- median(progabide_periodo2$y)
-mediana
+
 moda <- mfv(progabide_periodo2$y)
-moda
+moda <- paste(moda[1],moda[2])
 sd <- sd(progabide_periodo2$y)
 sd
 var <- var(progabide_periodo2$y)
@@ -468,7 +465,7 @@ cv
 ran <- range(progabide_periodo2$y)
 ran
 progabideperiodo2_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
-write.csv(progabideperiodo2_descriptiva,"C:/Users/luisf/EstaDescriptiva_progabideperiodo2.csv", row.names = FALSE)
+
 ```
 
 # progabide periodo 3
@@ -493,7 +490,7 @@ cv
 ran <- range(progabide_periodo3$y)
 ran
 progabideperiodo3_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
-write.csv(progabideperiodo3_descriptiva,"C:/Users/luisf/EstaDescriptiva_progabideperiodo3.csv", row.names = FALSE)
+
 ```
 
 # progabide periodo 4
@@ -515,32 +512,13 @@ iqr <- IQR(progabide_periodo4$y)
 iqr
 cv <- sd/media
 cv
-ran <- range(progabide_periodo4$y)
+ran <- ?range(progabide_periodo4$y)
 ran
 progabideperiodo4_descriptiva <- c(media,mediana,moda,sd,var,q,iqr,cv,ran)
-write.csv(progabideperiodo4_descriptiva,"C:/Users/luisf/EstaDescriptiva_progabideperiodo.csv", row.names = FALSE)
-```
 
-# De las crisis en grupos progabide
-```{r}
-media <- mean(sujetos_progabide$y)
-media
-mediana <- median(sujetos_progabide$y)
-mediana
-moda <- mfv(sujetos_progabide$y)
-moda
-sd <- sd(sujetos_progabide$y)
-sd
-var <- var(sujetos_progabide$y)
-var
-q <- quantile(sujetos_progabide$y)
-q
-iqr <- IQR(sujetos_progabide$y)
-iqr
-cv <- sd/media
-cv
-ran <- range(sujetos_progabide$y)
-ran
+progabide_periodos <- data.frame(progabidebase_descriptiva,progabideperiodo1_descriptiva,progabideperiodo2_descriptiva,progabideperiodo3_descriptiva,progabideperiodo4_descriptiva)
+
+write.csv(progabide_periodos,"C:/Users/luisf/EstaDescriptiva_progabideperiodos.csv", row.names = FALSE)
 ```
 # Pruebas de Normalidad
 ```{r}
