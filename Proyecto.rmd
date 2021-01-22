@@ -22,6 +22,9 @@ library(modeest)
 data_cruda<-MASS::epil
 data_cruda<- data_cruda %>% distinct
 data_cruda
+sujetos_placebo <- data_cruda %>% filter(trt=="placebo") %>% dplyr::select(y,subject,period)
+sujetos_progabide <- data_cruda %>% filter(trt=="progabide") %>% dplyr::select(y,subject,period)
+
 # Quitar los outliers
 
 #buscamos donde estan los outliers, sujetos 49 y 25
@@ -195,8 +198,6 @@ length(sujetos_progabide$subject) # 31 pacientes
 ## Análisis de estadística descriptiva:
 ```{r}
 #install.packages("modeest")
-sujetos_placebo <- data_cruda %>% filter(trt=="placebo") %>% dplyr::select(y,subject,period)
-sujetos_progabide <- data_cruda %>% filter(trt=="progabide") %>% dplyr::select(y,subject,period)
 data_descriptiva_edad <- data_cruda %>% dplyr::select(age,subject)
 data_descriptiva_edad <- data_descriptiva_edad %>% distinct
 ```
