@@ -245,6 +245,29 @@ cv
 ran <- range(sujetos_placebo$y)
 ran
 ```
+# placebo línea base
+```{r}
+placebo_periodo0 <- sujetos_placebo %>% filter(period=="0")
+media <- mean(placebo_periodo0$y)
+media
+mediana <- median(placebo_periodo0$y)
+mediana
+moda <- mfv(placebo_periodo0$y)
+moda
+sd <- sd(placebo_periodo0$y)
+sd
+var <- var(placebo_periodo0$y)
+var
+q <- quantile(placebo_periodo0$y)
+q
+iqr <- IQR(placebo_periodo0$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(placebo_periodo0$y)
+ran
+```
+
 # placebo periodo 1
 ```{r}
 placebo_periodo1 <- sujetos_placebo %>% filter(period=="1")
@@ -334,6 +357,50 @@ iqr
 cv <- sd/media
 cv
 ran <- range(placebo_periodo4$y)
+ran
+```
+
+# De las crisis en grupos progabide
+```{r}
+media <- mean(sujetos_progabide$y)
+media
+mediana <- median(sujetos_progabide$y)
+mediana
+moda <- mfv(sujetos_progabide$y)
+moda
+sd <- sd(sujetos_progabide$y)
+sd
+var <- var(sujetos_progabide$y)
+var
+q <- quantile(sujetos_progabide$y)
+q
+iqr <- IQR(sujetos_progabide$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(sujetos_progabide$y)
+ran
+```
+# progabide línea base
+```{r}
+progabide_periodo0 <- sujetos_progabide %>% filter(period=="0")
+media <- mean(progabide_periodo0$y)
+media
+mediana <- median(progabide_periodo0$y)
+mediana
+moda <- mfv(progabide_periodo0$y)
+moda
+sd <- sd(progabide_periodo0$y)
+sd
+var <- var(progabide_periodo0$y)
+var
+q <- quantile(progabide_periodo0$y)
+q
+iqr <- IQR(progabide_periodo0$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(progabide_periodo0$y)
 ran
 ```
 
