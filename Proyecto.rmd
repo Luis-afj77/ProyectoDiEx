@@ -90,6 +90,8 @@ boxplots_porcentaje
 ```{r}
 # U de Mann-Withney = wilcox.test(paired=FALSE)
 
+Data_wilcoxon <- Data_cocinada
+Data_wilcoxon$Vector1<-paste0(Data_wilcoxon$tratamiento, Data_wilcoxon$periodo)
 w0 <- wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide0"], paired = FALSE, alternative = "greater")
 w0$p.value
 
@@ -188,7 +190,7 @@ controles <- data.frame(control0,control1,control2,control3,control4)
 length(sujetos_placebo$subject) # 28 pacientes
 length(sujetos_progabide$subject) # 31 pacientes
 ```
-# Análisis de estadística descriptiva:
+## Análisis de estadística descriptiva:
 ```{r}
 #install.packages("modeest")
 sujetos_placebo <- data_cruda %>% filter(trt=="placebo") %>% dplyr::select(y,subject,period)
@@ -259,6 +261,167 @@ iqr
 cv <- sd/media
 cv
 ran <- range(placebo_periodo1$y)
+ran
+```
+
+# placebo periodo 2
+```{r}
+placebo_periodo2 <- sujetos_placebo %>% filter(period=="2")
+media <- mean(placebo_periodo2$y)
+media
+mediana <- median(placebo_periodo2$y)
+mediana
+moda <- mfv(placebo_periodo2$y)
+moda
+sd <- sd(placebo_periodo2$y)
+sd
+var <- var(placebo_periodo2$y)
+var
+q <- quantile(placebo_periodo2$y)
+q
+iqr <- IQR(placebo_periodo2$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(placebo_periodo2$y)
+ran
+```
+
+# placebo periodo 3
+```{r}
+placebo_periodo3 <- sujetos_placebo %>% filter(period=="3")
+media <- mean(placebo_periodo3$y)
+media
+mediana <- median(placebo_periodo3$y)
+mediana
+moda <- mfv(placebo_periodo3$y)
+moda
+sd <- sd(placebo_periodo3$y)
+sd
+var <- var(placebo_periodo3$y)
+var
+q <- quantile(placebo_periodo3$y)
+q
+iqr <- IQR(placebo_periodo3$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(placebo_periodo3$y)
+ran
+```
+
+# placebo periodo 4
+```{r}
+placebo_periodo4 <- sujetos_placebo %>% filter(period=="4")
+media <- mean(placebo_periodo4$y)
+media
+mediana <- median(placebo_periodo4$y)
+mediana
+moda <- mfv(placebo_periodo4$y)
+moda
+sd <- sd(placebo_periodo4$y)
+sd
+var <- var(placebo_periodo4$y)
+var
+q <- quantile(placebo_periodo4$y)
+q
+iqr <- IQR(placebo_periodo4$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(placebo_periodo4$y)
+ran
+```
+
+# progabide periodo 1
+```{r}
+progabide_periodo1 <- sujetos_progabide %>% filter(period=="1")
+media <- mean(progabide_periodo1$y)
+media
+mediana <- median(progabide_periodo1$y)
+mediana
+moda <- mfv(progabide_periodo1$y)
+moda
+sd <- sd(progabide_periodo1$y)
+sd
+var <- var(progabide_periodo1$y)
+var
+q <- quantile(progabide_periodo1$y)
+q
+iqr <- IQR(progabide_periodo1$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(progabide_periodo1$y)
+ran
+```
+
+# progabide periodo 2
+```{r}
+progabide_periodo2 <- sujetos_progabide %>% filter(period=="2")
+media <- mean(progabide_periodo2$y)
+media
+mediana <- median(progabide_periodo2$y)
+mediana
+moda <- mfv(progabide_periodo2$y)
+moda
+sd <- sd(progabide_periodo2$y)
+sd
+var <- var(progabide_periodo2$y)
+var
+q <- quantile(progabide_periodo2$y)
+q
+iqr <- IQR(progabide_periodo2$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(progabide_periodo2$y)
+ran
+```
+
+# progabide periodo 3
+```{r}
+progabide_periodo3 <- sujetos_progabide %>% filter(period=="3")
+media <- mean(progabide_periodo3$y)
+media
+mediana <- median(progabide_periodo3$y)
+mediana
+moda <- mfv(progabide_periodo3$y)
+moda
+sd <- sd(progabide_periodo3$y)
+sd
+var <- var(progabide_periodo3$y)
+var
+q <- quantile(progabide_periodo3$y)
+q
+iqr <- IQR(progabide_periodo3$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(progabide_periodo3$y)
+ran
+```
+
+# progabide periodo 4
+```{r}
+progabide_periodo4 <- sujetos_progabide %>% filter(period=="4")
+media <- mean(progabide_periodo4$y)
+media
+mediana <- median(progabide_periodo4$y)
+mediana
+moda <- mfv(progabide_periodo4$y)
+moda
+sd <- sd(progabide_periodo4$y)
+sd
+var <- var(progabide_periodo4$y)
+var
+q <- quantile(progabide_periodo4$y)
+q
+iqr <- IQR(progabide_periodo4$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(progabide_periodo4$y)
 ran
 ```
 
