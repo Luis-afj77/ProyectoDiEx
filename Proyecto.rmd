@@ -90,8 +90,10 @@ boxplots_porcentaje
 ```{r}
 # U de Mann-Withney = wilcox.test(paired=FALSE)
 
-Data_wilcoxon <- Data_cocinada
+Data_wilcoxon <- Data_condimentada
 Data_wilcoxon$Vector1<-paste0(Data_wilcoxon$tratamiento, Data_wilcoxon$periodo)
+
+Data_wilcoxon$Vector1 <- as.factor(Data_wilcoxon$Vector1)
 w0 <- wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide0"], paired = FALSE, alternative = "greater")
 w0$p.value
 
