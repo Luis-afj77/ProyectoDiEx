@@ -88,7 +88,6 @@ boxplots_porcentaje
 # Resultados:
 ## Hacemos U de Mann_Withney: comparando entre tratamiento en cada periodo
 ```{r}
-
 # U de Mann-Withney = wilcox.test(paired=FALSE)
 
 w0 <- wilcox.test(Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "placebo0"], Data_wilcoxon$crisis[Data_wilcoxon$Vector1 == "progabide0"], paired = FALSE, alternative = "greater")
@@ -106,6 +105,7 @@ w_p_values <- data.frame(w0$p.value,w1$p.value,w2$p.value,w3$p.value,w4$p.value)
 
 w_p_values
 
+write.csv(w_p_values,"C:/Users/luisf/U_de_Mann_Withney.csv", row.names = FALSE)
 ```
 ## Obtenemos que ninguno es significativo
 # Friedman:
@@ -118,6 +118,7 @@ f2 <- friedman.test(Data_progabide$crisis,Data_progabide$periodo,Data_progabide$
 
 friedman_results <- data.frame(f1$p.value,f2$p.value)
 friedman_results
+write.csv(friedman_results,"C:/Users/luisf/Friedman.csv", row.names = FALSE)
 ```
 # Post-hoc: Wilcoxon ajustada con bonferroni
 ```{r}
@@ -150,6 +151,7 @@ p_ajustada
 
 p <- data.frame(p_values,p_ajustada)
 p
+write.csv(p,"C:/Users/luisf/Posthoc.csv", row.names = FALSE)
 ```
 # Muestra de que Pairwise nos da puros 1, mostrando que aunque haciendo wilcoxon y ajustando
 ```{r}
@@ -186,66 +188,106 @@ controles <- data.frame(control0,control1,control2,control3,control4)
 length(sujetos_placebo$subject) # 28 pacientes
 length(sujetos_progabide$subject) # 31 pacientes
 ```
-# Análisis  de estadística descriptiva
+# Análisis de estadística descriptiva:
 ```{r}
 #install.packages("modeest")
-sujetos_placebo<-subset(data_cruda, trt == "placebo")
-sujetos_progabide<-subset(data_cruda, trt == "progabide")
+sujetos_placebo <- data_cruda %>% filter(trt=="placebo") %>% dplyr::select(y,subject,period)
+sujetos_progabide <- data_cruda %>% filter(trt=="progabide") %>% dplyr::select(y,subject,period)
+data_descriptiva_edad <- data_cruda %>% dplyr::select(age,subject)
+data_descriptiva_edad <- data_descriptiva_edad %>% distinct
 ```
 
-# Media:
+# De la edad
 ```{r}
-data_descriptiva <- data_cruda %>% dplyr::select(age,subject)
-data_descriptiva <- data %>% distinct
-data_descriptiva
-media <- mean(data_descriptiva$age)
+media <- mean(data_descriptiva_edad$age)
 media
-```
-# Mediana:
-```{r}
-mediana <- median(data_descriptiva$age)
+mediana <- median(data_descriptiva_edad$age)
 mediana
-```
-# Moda:
-```{r}
-moda <- mfv(data_descriptiva$age)
+moda <- mfv(data_descriptiva_edad$age)
 moda
-```
-# Desviación Estandar
-```{r}
-sd <- sd(data_descriptiva$age)
+sd <- sd(data_descriptiva_edad$age)
 sd
-```
-# Varianza
-```{r}
-var <- var(data_descriptiva$age)
+var <- var(data_descriptiva_edad$age)
 var
-```
-# Cuantiles
-```{r}
-q <- quantile(data_descriptiva$age)
+q <- quantile(data_descriptiva_edad$age)
 q
-```
-# IQR
-```{r}
-iqr <- IQR(data_descriptiva$age)
+iqr <- IQR(data_descriptiva_edad$age)
 iqr
-```
-# Covarianza
-```{r}
 cv <- sd/media
 cv
+ran <- range(data_descriptiva_edad$age)
+ran
 ```
-# Rango
+# De las crisis en grupos placebo
 ```{r}
-ran <- range(data_descriptiva$age)
+media <- mean(sujetos_placebo$y)
+media
+mediana <- median(sujetos_placebo$y)
+mediana
+moda <- mfv(sujetos_placebo$y)
+moda
+sd <- sd(sujetos_placebo$y)
+sd
+var <- var(sujetos_placebo$y)
+var
+q <- quantile(sujetos_placebo$y)
+q
+iqr <- IQR(sujetos_placebo$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(sujetos_placebo$y)
+ran
+```
+# placebo periodo 1
+```{r}
+placebo_periodo1 <- sujetos_placebo %>% filter(period=="1")
+media <- mean(placebo_periodo1$y)
+media
+mediana <- median(placebo_periodo1$y)
+mediana
+moda <- mfv(placebo_periodo1$y)
+moda
+sd <- sd(placebo_periodo1$y)
+sd
+var <- var(placebo_periodo1$y)
+var
+q <- quantile(placebo_periodo1$y)
+q
+iqr <- IQR(placebo_periodo1$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(placebo_periodo1$y)
+ran
+```
+
+# De las crisis en grupos progabide
+```{r}
+media <- mean(sujetos_progabide$y)
+media
+mediana <- median(sujetos_progabide$y)
+mediana
+moda <- mfv(sujetos_progabide$y)
+moda
+sd <- sd(sujetos_progabide$y)
+sd
+var <- var(sujetos_progabide$y)
+var
+q <- quantile(sujetos_progabide$y)
+q
+iqr <- IQR(sujetos_progabide$y)
+iqr
+cv <- sd/media
+cv
+ran <- range(sujetos_progabide$y)
 ran
 ```
 # Pruebas de Normalidad
 ```{r}
 
 ## Control 1
-shapiro.test(control1$crisis1) # se rechaza hipótesis nula, no es normal la distribución 
+shapiro.test(control1$crisis1)# se rechaza hipótesis nula, no es normal la distribución 
 hist(control1$crisis1)
 library(fitdistrplus)
 descdist(control1$crisis1) # se ve que también es beta
