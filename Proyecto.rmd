@@ -66,27 +66,34 @@ Data_condimentada <- Data_condimentada[with(Data_condimentada, order(Data_condim
 #Con este data.frame ya podemos hacer nuestras pruebas de hipotesis.
 ```
 
-# Base de datos de porcentaje de diferencia:
-```{r}
-# Añadiendo el porcetaje de diferencia
-Porcentaje.diferencia <- (Data_cocinada$crisis / Data_cocinada$base)*100
-Porcentaje.df <- cbind(Data_cocinada, Porcentaje.diferencia)
-names(Porcentaje.df)[names(Porcentaje.df) == "Porcentaje.diferencia"] <- "porcentaje"
-names(Porcentaje.df)[names(Porcentaje.df) == "data_cruda.trt"] <- "tratamiento"
-Porcentaje.df$periodo <- as.factor(Porcentaje.df$periodo)
-```
-
 # Boxplots:
 ```{r}
 boxplots_cruda <- ggplot(Data_condimentada, aes(x= periodo, y= crisis, fill= tratamiento)) +
-  geom_boxplot() +
-  ggtitle("Número de crisis epilépticas de los sujetos por cada periodo")
-boxplots_cruda
+  geom_boxplot(outlier.shape = NA) +
+  coord_cartesian(ylim=c(0, 30)) +
+  labs(title = "Distribución del número de crisis por cada periodo", x = "periodo", y = "crisis") + theme_minimal() + theme(plot.title = element_text(size = 16, color = "#64BBCC", face = "italic", "bold", family ="serif"), text = element_text(size = 9), legend.title = element_text(size = 9), legend.text = element_text(size = 9))
+boxplots_cruda 
 
-boxplots_porcentaje <- ggplot(Porcentaje.df, aes(x= periodo, y= porcentaje, fill= tratamiento)) +
-  geom_boxplot() +
-ggtitle("Porcentaje de crisis epilépticas por periodo con respecto a línea base")
-boxplots_porcentaje
+boxplots_placebo <- ggplot(Data_condimentada %>% filter(tratamiento=="placebo"), aes(x= periodo, y= crisis, fill= "red")) +
+  geom_boxplot(outlier.shape = NA) +
+  coord_cartesian(ylim=c(0, 30))+ labs(title = "Distribución del número de crisis por cada periodo, grupo placebo", x = "periodo", y = "crisis") + theme_minimal() + theme(plot.title = element_text(size = 16, color = "#FF696A", face = "italic", "bold", family ="serif"), text = element_text(size = 9), legend.title = element_blank(), legend.text = element_blank(), legend.position='none')  + stat_summary(
+    fun.y = median,
+    geom = 'line',
+    aes(group = tratamiento, colour = tratamiento),
+    position = position_dodge(width = 0.9) #this has to be added
+  )
+boxplots_placebo 
+
+boxplots_proga <- ggplot(Data_condimentada %>% filter(tratamiento=="progabide"), aes(x= periodo, y= crisis, fill= tratamiento)) +
+  geom_boxplot(outlier.shape = NA) + scale_fill_manual(values = c("#64BBCC")) +
+  coord_cartesian(ylim=c(0, 30))+ labs(title = "Distribución del número de crisis por cada periodo, grupo progabide", x = "periodo", y = "crisis") + theme_minimal() + theme(plot.title = element_text(size = 16, color = "blue", face = "italic", "bold", family ="serif"), text = element_text(size = 9), legend.title = element_blank(), legend.text = element_blank(), legend.position='none')  + 
+  stat_summary(
+    fun.y = median,
+    geom = 'line',
+    aes(group = tratamiento, color= tratamiento),
+    position = position_dodge(width = 0.9) #this has to be added
+  ) + scale_colour_manual(values = c("#64BBCC"))
+boxplots_proga
 ```
 # Resultados:
 ## Hacemos U de Mann_Withney: comparando entre tratamiento en cada periodo
